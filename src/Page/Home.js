@@ -66,14 +66,15 @@ const getCategoryIcon = (category) => {
 
 // Colors for charts
 const COLORS = {
-  "Cloudy White": "#8dd1e1",
-  Blue: "#82ca9d",
-  Purple: "#a4de6c",
-  Brown: "#d0ed57",
-  Red: "#ffc658",
-  Silver: "#8884d8",
-  "Space Gray": "#83a6ed",
-  White: "#8dd1e1",
+  "Cloudy White": "#F5F5F5",
+  Blue: "#2196F3",
+  Purple: "#9C27B0",
+  Brown: "#795548",
+  Red: "#F44336",
+  Silver: "#C0C0C0",
+  "Space Gray": "#4B4B4B",
+  White: "#FFFFFF",
+  Black: "#000000",
 };
 
 const CAPACITY_COLORS = {
@@ -228,6 +229,7 @@ function Home() {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <NavBar user={user} />
+
       <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
         <Box sx={{ mb: 4 }}>
           <Typography
@@ -243,7 +245,7 @@ function Home() {
           </Typography>
         </Box>
 
-        <Grid container spacing={1}>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={8}>
             <Box
               sx={{
@@ -349,14 +351,15 @@ function Home() {
                 </Typography>
               </Paper>
             ) : (
-              <Grid container spacing={3}>
+              <Grid container spacing={3} alignItems="stretch">
                 {filteredProducts.map((product) => (
-                  <Grid item xs={12} sm={6} md={6} lg={4} key={product.id}>
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
                     <Card
                       sx={{
-                        height: "100%",
+                        height: 420, // Set a fixed height to make all cards equal
                         display: "flex",
                         flexDirection: "column",
+                        justifyContent: "space-between",
                         transition: "transform 0.3s, box-shadow 0.3s",
                         "&:hover": {
                           transform: "translateY(-8px)",
@@ -368,7 +371,11 @@ function Home() {
                         <CardMedia
                           component="img"
                           height="200"
-                          image={product?.data?.img_url}
+                          image={
+                            product?.data?.img_url
+                              ? product?.data?.img_url
+                              : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpbSQ61ub5SessMxSYRbrRYFaeuhOendCUUw&s"
+                          }
                           alt={product?.name}
                         />
                         <Chip
@@ -383,53 +390,51 @@ function Home() {
                           }}
                         />
                       </Box>
-                      <CardContent sx={{ flexGrow: 1 }}>
+
+                      <CardContent
+                        sx={{
+                          flexGrow: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
                         <Typography
-                          gutterBottom
                           variant="h6"
                           component="div"
-                          sx={{ fontWeight: "bold" }}
+                          sx={{
+                            fontWeight: "bold",
+                            mb: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                          title={product?.name}
                         >
                           {product?.name}
                         </Typography>
-                        <Box sx={{ mt: 1 }}>
-                          <Typography
-                            variant="h6"
-                            color="primary"
-                            sx={{ fontWeight: "bold", mb: 1 }}
-                          >
-                            ${product?.data?.price}
-                          </Typography>
-                          <Grid container spacing={1}>
-                            {product?.data?.color && (
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ fontWeight: "bold" }}
-                                >
-                                  Color:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {product?.data?.color}
-                                </Typography>
-                              </Grid>
-                            )}
-                            {product?.data?.capacity && (
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ fontWeight: "bold" }}
-                                >
-                                  Capacity:
-                                </Typography>
-                                <Typography variant="body2">
-                                  {product?.data?.capacity}
-                                </Typography>
-                              </Grid>
-                            )}
-                          </Grid>
+
+                        <Typography
+                          variant="h6"
+                          color="primary"
+                          sx={{ fontWeight: "bold", mb: 1 }}
+                        >
+                          {product?.data?.price
+                            ? `$${product?.data?.price}`
+                            : "Available soon"}
+                        </Typography>
+
+                        <Box sx={{ mt: "auto" }}>
+                          {product?.data?.color && (
+                            <Typography variant="body2">
+                              <strong>Color:</strong> {product?.data?.color}
+                            </Typography>
+                          )}
+                          {product?.data?.capacity && (
+                            <Typography variant="body2">
+                              <strong>Capacity:</strong>{" "}
+                              {product?.data?.capacity}
+                            </Typography>
+                          )}
                         </Box>
                       </CardContent>
                     </Card>
@@ -456,87 +461,81 @@ function Home() {
           </Typography>
         </Box>
 
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
             <Paper
               elevation={4}
               sx={{
-                mb: 5,
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                p: 3,
                 width: "100%",
-                overflow: "visible",
-                px: 1, // Add horizontal padding
+                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <Tabs
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-              >
-                <Tab label="Charts" />
-              </Tabs>
-              <Box sx={{ p: 8 }}>
-                <Grid container spacing={8}>
-                  <Grid item xs={12} md={4}>
-                    <Typography variant="h6" gutterBottom>
-                      Product Distribution by Color
-                    </Typography>
-                    <Box sx={{ height: 350, width: 500, overflow: "visible" }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={colorChartData}
-                          margin={{ top: 5, right: 30, left: 10, bottom: 50 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis
-                            dataKey="name"
-                            angle={-45}
-                            textAnchor="end"
-                            height={60}
-                          />
-                          <YAxis allowDecimals={false} />
-                          <Tooltip />
-                          <Legend />
-                          <Bar
-                            dataKey="count"
-                            name="Number of Products"
-                            fill="#8884d8"
-                          />
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </Grid>
+              <Typography variant="h6" gutterBottom>
+                Product Distribution by Color
+              </Typography>
+              <Box sx={{ width: "100%", height: 300 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={colorChartData}
+                    margin={{ top: 5, right: 30, left: 10, bottom: 50 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="name"
+                      angle={-45}
+                      textAnchor="end"
+                      height={60}
+                    />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                      dataKey="count"
+                      name="Number of Products"
+                      fill="#8884d8"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </Box>
+            </Paper>
+          </Grid>
 
-                  <Grid item xs={12} md={6}>
-                    <Typography variant="h6" gutterBottom>
-                      Product Distribution by Capacity
-                    </Typography>
-                    <Box sx={{ height: 350, width: 500 }}>
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={capacityChartData}
-                            cx="50%"
-                            cy="50%"
-                            labelLine
-                            label={({ name, percent }) =>
-                              `${name} (${(percent * 100).toFixed(0)}%)`
-                            }
-                            outerRadius={80}
-                            fill="#8884d8"
-                            dataKey="value"
-                          >
-                            {capacityChartData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.fill} />
-                            ))}
-                          </Pie>
-                          <Tooltip />
-                          <Legend />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    </Box>
-                  </Grid>
-                </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper
+              elevation={4}
+              sx={{
+                p: 3,
+                width: "100%",
+                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                Product Distribution by Capacity
+              </Typography>
+              <Box sx={{ width: "100%", height: 300 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={capacityChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine
+                      label={({ name, percent }) =>
+                        `${name} (${(percent * 100).toFixed(0)}%)`
+                      }
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {capacityChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
               </Box>
             </Paper>
           </Grid>
