@@ -32,7 +32,7 @@ const Signup = () => {
         navigate("/home");
       }
     });
-  });
+  }, []);
 
   const logGoogleUser = async () => {
     try {
