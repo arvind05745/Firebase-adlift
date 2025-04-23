@@ -33,7 +33,7 @@ const AddItem = () => {
     capacity: "",
     category: "",
     color: "",
-    image_url: "",
+    img_url: "",
     price: "",
     CPUModel: "",
     HardDiskSize: "",
@@ -51,7 +51,7 @@ const AddItem = () => {
     "Other",
   ];
 
-  const capacityOptions = ["32 GB", "64 GB", "128 GB", "256 GB", "512 GB"];
+  const capacityOptions = ["32GB", "64GB", "128GB", "256GB", "512GB"];
 
   const colorOptions = [
     "Black",
@@ -149,8 +149,8 @@ const AddItem = () => {
         price: Number(formData.price),
         year: Number(formData.year),
       };
-
       handleCreateNewListing(formattedData);
+      navigate("/home");
     }
   };
 
@@ -308,7 +308,7 @@ const AddItem = () => {
                 <TextField
                   fullWidth
                   label="Image URL"
-                  name="image_url"
+                  name="img_url"
                   value={formData.image_url}
                   onChange={handleChange}
                   placeholder="https://example.com/image.jpg"
