@@ -236,7 +236,7 @@ function Home() {
             gutterBottom
             sx={{ fontWeight: "bold" }}
           >
-            Welcome to ATLIFT Project(Test)
+            Welcome to ADLIFT Project(Test)
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" gutterBottom>
             Discover the latest tech products and accessories

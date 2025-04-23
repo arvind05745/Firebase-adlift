@@ -43,7 +43,7 @@ export default function NavBar({ user }) {
             component="div"
             sx={{ flexGrow: 1, fontWeight: "bold" }}
           >
-            ATLIFT Project(Test)
+            ADLIFT Project(Test)
           </Typography>
 
           <Box
