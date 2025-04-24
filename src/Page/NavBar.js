@@ -58,7 +58,7 @@ export default function NavBar({ user }) {
             </Button>
           </Box>
           <Box
-            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
+            sx={{ display: { xs: "none", md: "flex" }, alignItems: "right" }}
           >
             <Button
               onClick={() => navigate("/add_item")}

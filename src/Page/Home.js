@@ -28,6 +28,7 @@ import {
   Watch as WatchIcon,
   Tablet as TabletIcon,
   FilterList as FilterListIcon,
+  AddAPhoto as Add,
 } from "@mui/icons-material";
 
 import {
@@ -237,6 +238,23 @@ function Home() {
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <NavBar user={user} />
       <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "right",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            onClick={() => navigate("/add_item")}
+            variant="contained"
+            sx={{ mb: 4 }}
+            startIcon={<Add />}
+          >
+            Add Item
+          </Button>
+        </Box>
+
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h4"
