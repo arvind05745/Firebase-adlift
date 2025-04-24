@@ -40,7 +40,7 @@ export default function NavBar({ user }) {
             sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
-            ALIFT Project(Test)
+            ADLIFT Project(Test)
           </Typography>
 
           <Box
