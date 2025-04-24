@@ -13,11 +13,7 @@ import {
   useTheme,
   useMediaQuery,
 } from "@mui/material";
-import {
-  Logout as LogoutIcon,
-  Home as HomeIcon,
-  AddAPhoto as Add,
-} from "@mui/icons-material";
+import { Logout as LogoutIcon } from "@mui/icons-material";
 
 export default function NavBar({ user }) {
   const navigate = useNavigate();

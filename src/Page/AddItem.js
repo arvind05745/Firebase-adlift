@@ -162,7 +162,7 @@ const AddItem = () => {
             </Typography>
 
             <Grid container spacing={3}>
-              <Grid item xs={12}>
+              <Grid sx={{ width: "100%" }} item xs={12}>
                 <TextField
                   required
                   fullWidth
@@ -175,7 +175,7 @@ const AddItem = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <FormControl fullWidth required error={!!errors.category}>
                   <InputLabel>Category</InputLabel>
                   <Select
@@ -198,7 +198,7 @@ const AddItem = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <TextField
                   required
                   fullWidth
@@ -217,7 +217,7 @@ const AddItem = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Color</InputLabel>
                   <Select
@@ -235,7 +235,7 @@ const AddItem = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <FormControl fullWidth>
                   <InputLabel>Capacity</InputLabel>
                   <Select
@@ -253,7 +253,7 @@ const AddItem = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="CPU Model"
@@ -264,7 +264,7 @@ const AddItem = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Hard Disk Size"
@@ -275,7 +275,7 @@ const AddItem = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6}>
+              <Grid sx={{ width: "100%" }} item xs={12} sm={6}>
                 <FormControl fullWidth required error={!!errors.year}>
                   <InputLabel>Year</InputLabel>
                   <Select
@@ -298,7 +298,7 @@ const AddItem = () => {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid sx={{ width: "100%" }} item xs={12}>
                 <TextField
                   fullWidth
                   label="Image URL"
