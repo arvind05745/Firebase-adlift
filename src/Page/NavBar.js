@@ -41,33 +41,11 @@ export default function NavBar({ user }) {
           <Typography
             variant="h6"
             component="div"
-            sx={{ flexGrow: 1, fontWeight: "bold" }}
+            sx={{ flexGrow: 1, fontWeight: "bold", cursor: "pointer" }}
+            onClick={() => navigate("/home")}
           >
-            ADLIFT Project(Test)
+            ALIFT Project(Test)
           </Typography>
-
-          <Box
-            sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
-          >
-            <Button
-              onClick={() => navigate("/home")}
-              color="inherit"
-              startIcon={<HomeIcon />}
-            >
-              Home
-            </Button>
-          </Box>
-          <Box
-            sx={{ display: { xs: "none", md: "flex" }, alignItems: "right" }}
-          >
-            <Button
-              onClick={() => navigate("/add_item")}
-              color="inherit"
-              startIcon={<Add />}
-            >
-              Add Item
-            </Button>
-          </Box>
 
           <Box
             sx={{

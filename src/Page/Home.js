@@ -73,7 +73,7 @@ const COLORS = {
   Red: "#F44336",
   Silver: "#C0C0C0",
   "Space Gray": "#4B4B4B",
-  White: "#FFFFFF",
+  White: "#FFFF00",
   Black: "#000000",
 };
 
@@ -544,7 +544,7 @@ function Home() {
                         dataKey="name"
                         angle={-45}
                         textAnchor="end"
-                        height={60}
+                        height={80}
                       />
                       <YAxis allowDecimals={false} />
                       <Tooltip />
