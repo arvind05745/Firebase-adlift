@@ -268,6 +268,39 @@ function Home() {
             Discover the latest tech products and accessories
           </Typography>
         </Box>
+        <Box
+          sx={{
+            mb: 3,
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+            size="small"
+          />
+
+          <Button
+            variant="outlined"
+            startIcon={<FilterListIcon />}
+            onClick={handleFilterMenuOpen}
+            sx={{ minWidth: 120 }}
+          >
+            Filter
+          </Button>
+        </Box>
 
         {loader ? (
           <Box sx={{ display: "flex" }}>
@@ -284,31 +317,6 @@ function Home() {
                   gap: 2,
                 }}
               >
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  size="small"
-                />
-
-                <Button
-                  variant="outlined"
-                  startIcon={<FilterListIcon />}
-                  onClick={handleFilterMenuOpen}
-                  sx={{ minWidth: 120 }}
-                >
-                  Filter
-                </Button>
-
                 <Menu
                   anchorEl={filterMenuAnchorEl}
                   open={Boolean(filterMenuAnchorEl)}
