@@ -17,9 +17,8 @@ import {
   Divider,
   MenuItem,
   Paper,
-  Tab,
-  Tabs,
   Menu,
+  CircularProgress,
 } from "@mui/material";
 import {
   Search as SearchIcon,
@@ -88,6 +87,7 @@ const CAPACITY_COLORS = {
 function Home() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loader, setLoader] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -99,6 +99,37 @@ function Home() {
   const [capacities, SetCapacities] = useState([]);
   const [colorChartData, setColorChartData] = useState([]);
   const [capacityChartData, setCapacityChartData] = useState([]);
+
+  useEffect(() => {
+    setLoader(true);
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+        setUser(null);
+        navigate("/login");
+      }
+    });
+
+    data
+      .then((docs) => {
+        const extractedData = docs.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          category: getProductCategory(doc.data().name),
+          image: doc.data()?.data?.img_url,
+        }));
+        setLoader(false);
+        setProducts(extractedData);
+        setFilteredProducts(extractedData);
+      })
+      .catch((err) => {
+        console.log("error", err);
+        setLoader(false);
+      });
+  }, []);
 
   useEffect(() => {
     if (products && products.length > 0) {
@@ -146,30 +177,6 @@ function Home() {
       setCapacityChartData(capacityChartData1);
     }
   }, [products]);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-        setUser(null);
-        navigate("/login");
-      }
-    });
-
-    data.then((docs) => {
-      const extractedData = docs.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        category: getProductCategory(doc.data().name),
-        image: doc.data()?.data?.img_url,
-      }));
-      setProducts(extractedData);
-      setFilteredProducts(extractedData);
-    });
-  }, []);
 
   const getProductCategory = (name) => {
     if (
@@ -229,7 +236,6 @@ function Home() {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <NavBar user={user} />
-
       <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
         <Box sx={{ mb: 4 }}>
           <Typography
@@ -245,299 +251,347 @@ function Home() {
           </Typography>
         </Box>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={8}>
-            <Box
-              sx={{
-                mb: 3,
-                display: "flex",
-                flexDirection: { xs: "column", sm: "row" },
-                gap: 2,
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="outlined"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon />
-                    </InputAdornment>
-                  ),
-                }}
-                size="small"
-              />
-
-              <Button
-                variant="outlined"
-                startIcon={<FilterListIcon />}
-                onClick={handleFilterMenuOpen}
-                sx={{ minWidth: 120 }}
-              >
-                Filter
-              </Button>
-
-              <Menu
-                anchorEl={filterMenuAnchorEl}
-                open={Boolean(filterMenuAnchorEl)}
-                onClose={handleFilterMenuClose}
-              >
-                <MenuItem onClick={() => handleFilterChange("all", "")}>
-                  All Products
-                </MenuItem>
-                <Divider />
-                <MenuItem disabled>
-                  <Typography variant="body2" color="text.secondary">
-                    Color
-                  </Typography>
-                </MenuItem>
-                {colors.map((color) => (
-                  <MenuItem
-                    key={color}
-                    onClick={() => handleFilterChange("color", color)}
-                  >
-                    {color}
-                  </MenuItem>
-                ))}
-                <Divider />
-                <MenuItem disabled>
-                  <Typography variant="body2" color="text.secondary">
-                    Capacity
-                  </Typography>
-                </MenuItem>
-                {capacities.map((capacity) => (
-                  <MenuItem
-                    key={capacity}
-                    onClick={() => handleFilterChange("capacity", capacity)}
-                  >
-                    {capacity}
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-
-            {selectedFilter && (
+        {loader ? (
+          <Box sx={{ display: "flex" }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={8}>
               <Box
-                sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}
+                sx={{
+                  mb: 3,
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  gap: 2,
+                }}
               >
-                <Typography variant="body2" color="text.secondary">
-                  Filtered by:
-                </Typography>
-                <Chip
-                  label={`${
-                    filterType === "color" ? "Color" : "Capacity"
-                  }: ${selectedFilter}`}
-                  onDelete={() => handleFilterChange("all", "")}
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search products..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
                   size="small"
                 />
-              </Box>
-            )}
 
-            {filteredProducts.length === 0 ? (
-              <Paper
-                sx={{
-                  p: 4,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  minHeight: 200,
-                }}
-              >
-                <Typography variant="body1" color="text.secondary">
-                  No products found matching your criteria
-                </Typography>
-              </Paper>
-            ) : (
-              <Grid container spacing={3} alignItems="stretch">
-                {filteredProducts.map((product) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                    <Card
-                      sx={{
-                        height: 420, // Set a fixed height to make all cards equal
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        transition: "transform 0.3s, box-shadow 0.3s",
-                        "&:hover": {
-                          transform: "translateY(-8px)",
-                          boxShadow: 4,
-                        },
-                      }}
+                <Button
+                  variant="outlined"
+                  startIcon={<FilterListIcon />}
+                  onClick={handleFilterMenuOpen}
+                  sx={{ minWidth: 120 }}
+                >
+                  Filter
+                </Button>
+
+                <Menu
+                  anchorEl={filterMenuAnchorEl}
+                  open={Boolean(filterMenuAnchorEl)}
+                  onClose={handleFilterMenuClose}
+                >
+                  <MenuItem onClick={() => handleFilterChange("all", "")}>
+                    All Products
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem disabled>
+                    <Typography variant="body2" color="text.secondary">
+                      Color
+                    </Typography>
+                  </MenuItem>
+                  {colors.map((color) => (
+                    <MenuItem
+                      key={color}
+                      onClick={() => handleFilterChange("color", color)}
                     >
-                      <Box sx={{ position: "relative" }}>
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={
-                            product?.data?.img_url
-                              ? product?.data?.img_url
-                              : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpbSQ61ub5SessMxSYRbrRYFaeuhOendCUUw&s"
-                          }
-                          alt={product?.name}
-                        />
-                        <Chip
-                          icon={getCategoryIcon(product.category)}
-                          label={product?.data?.category}
-                          size="small"
-                          sx={{
-                            position: "absolute",
-                            top: 10,
-                            right: 10,
-                            backgroundColor: "rgba(255, 255, 255, 0.9)",
-                          }}
-                        />
-                      </Box>
+                      {color}
+                    </MenuItem>
+                  ))}
+                  <Divider />
+                  <MenuItem disabled>
+                    <Typography variant="body2" color="text.secondary">
+                      Capacity
+                    </Typography>
+                  </MenuItem>
+                  {capacities.map((capacity) => (
+                    <MenuItem
+                      key={capacity}
+                      onClick={() => handleFilterChange("capacity", capacity)}
+                    >
+                      {capacity}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
 
-                      <CardContent
+              {selectedFilter && (
+                <Box
+                  sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Filtered by:
+                  </Typography>
+                  <Chip
+                    label={`${
+                      filterType === "color" ? "Color" : "Capacity"
+                    }: ${selectedFilter}`}
+                    onDelete={() => handleFilterChange("all", "")}
+                    size="small"
+                  />
+                </Box>
+              )}
+
+              {filteredProducts.length === 0 ? (
+                <Paper
+                  sx={{
+                    p: 4,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: 200,
+                  }}
+                >
+                  <Typography variant="body1" color="text.secondary">
+                    No products found matching your criteria
+                  </Typography>
+                </Paper>
+              ) : (
+                <Grid container spacing={3} alignItems="stretch">
+                  {filteredProducts.map((product) => (
+                    <Grid
+                      item
+                      xs={12}
+                      sm={6}
+                      md={4}
+                      lg={3}
+                      key={product.id}
+                      sx={{ width: "350px" }}
+                    >
+                      <Card
                         sx={{
-                          flexGrow: 1,
+                          height: 420,
                           display: "flex",
                           flexDirection: "column",
+                          justifyContent: "space-between",
+                          transition: "transform 0.3s, box-shadow 0.3s",
+                          "&:hover": {
+                            transform: "translateY(-8px)",
+                            boxShadow: 4,
+                          },
                         }}
                       >
-                        <Typography
-                          variant="h6"
-                          component="div"
-                          sx={{
-                            fontWeight: "bold",
-                            mb: 1,
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            whiteSpace: "nowrap",
-                          }}
-                          title={product?.name}
-                        >
-                          {product?.name}
-                        </Typography>
-
-                        <Typography
-                          variant="h6"
-                          color="primary"
-                          sx={{ fontWeight: "bold", mb: 1 }}
-                        >
-                          {product?.data?.price
-                            ? `$${product?.data?.price}`
-                            : "Available soon"}
-                        </Typography>
-
-                        <Box sx={{ mt: "auto" }}>
-                          {product?.data?.color && (
-                            <Typography variant="body2">
-                              <strong>Color:</strong> {product?.data?.color}
-                            </Typography>
-                          )}
-                          {product?.data?.capacity && (
-                            <Typography variant="body2">
-                              <strong>Capacity:</strong>{" "}
-                              {product?.data?.capacity}
-                            </Typography>
-                          )}
+                        <Box sx={{ position: "relative" }}>
+                          <CardMedia
+                            component="img"
+                            height="200"
+                            width={300}
+                            image={
+                              product?.data?.img_url
+                                ? product?.data?.img_url
+                                : "https://www.stockvault.net/data/2017/04/07/233529/preview16.jpg"
+                            }
+                            alt={product?.name}
+                          />
+                          <Chip
+                            icon={getCategoryIcon(product.category)}
+                            label={product?.data?.category}
+                            size="small"
+                            sx={{
+                              position: "absolute",
+                              top: 10,
+                              right: 10,
+                              backgroundColor: "rgba(255, 255, 255, 0.9)",
+                            }}
+                          />
                         </Box>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            )}
+
+                        <CardContent
+                          sx={{
+                            flexGrow: 1,
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            component="div"
+                            sx={{
+                              fontWeight: "bold",
+                              mb: 1,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              width: "300px",
+                            }}
+                            title={product?.name}
+                          >
+                            {product?.name}
+                          </Typography>
+
+                          <Typography
+                            variant="h6"
+                            color="primary"
+                            sx={{ fontWeight: "bold", mb: 1 }}
+                          >
+                            {product?.data?.price
+                              ? `$${product?.data?.price}`
+                              : "Available soon"}
+                          </Typography>
+
+                          <Box sx={{ mt: "auto" }}>
+                            {product?.data?.color && (
+                              <Typography variant="body2">
+                                <strong>Color:</strong> {product?.data?.color}
+                              </Typography>
+                            )}
+                            {product?.data?.capacity ? (
+                              <Typography variant="body2">
+                                <strong>Capacity:</strong>{" "}
+                                {product?.data?.capacity}
+                              </Typography>
+                            ) : (
+                              <Typography variant="body2">
+                                <strong>Capacity:</strong> Not disclosed
+                              </Typography>
+                            )}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Container>
 
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 8 }}>
-        <Box sx={{ mb: 4 }}>
+      <Container
+        maxWidth="xl"
+        sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 4, sm: 8 } }}
+      >
+        <Box sx={{ mb: { xs: 2, sm: 4 } }}>
           <Typography
             variant="h4"
             component="h1"
             gutterBottom
-            sx={{ fontWeight: "bold" }}
+            sx={{ fontWeight: "bold", fontSize: { xs: "1.5rem", sm: "2rem" } }}
           >
             Charts
           </Typography>
-          <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+          <Typography
+            variant="subtitle1"
+            color="text.secondary"
+            gutterBottom
+            sx={{ fontSize: { xs: "0.9rem", sm: "1rem" } }}
+          >
             Graph representation of the sale.
           </Typography>
         </Box>
 
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <Paper
-              elevation={4}
-              sx={{
-                p: 3,
-                width: "100%",
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Product Distribution by Color
-              </Typography>
-              <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={colorChartData}
-                    margin={{ top: 5, right: 30, left: 10, bottom: 50 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      angle={-45}
-                      textAnchor="end"
-                      height={60}
-                    />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar
-                      dataKey="count"
-                      name="Number of Products"
-                      fill="#8884d8"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </Paper>
+            {!loader && (
+              <Paper
+                elevation={3}
+                sx={{
+                  p: { xs: 2, sm: 3 },
+                  width: "100%",
+                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
+                >
+                  Product Distribution by Color
+                </Typography>
+                <Box
+                  sx={{ width: "100%", height: { xs: 250, sm: 300, md: 350 } }}
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={colorChartData}
+                      margin={{ top: 5, right: 30, left: 10, bottom: 50 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis
+                        dataKey="name"
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Legend />
+                      <Bar
+                        dataKey="count"
+                        name="Number of Products"
+                        fill="#8884d8"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Paper>
+            )}
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Paper
-              elevation={4}
-              sx={{
-                p: 3,
-                width: "100%",
-                boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                Product Distribution by Capacity
-              </Typography>
-              <Box sx={{ width: "100%", height: 300 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={capacityChartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine
-                      label={({ name, percent }) =>
-                        `${name} (${(percent * 100).toFixed(0)}%)`
-                      }
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {capacityChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
+            {loader ? (
+              <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+                <CircularProgress />
               </Box>
-            </Paper>
+            ) : (
+              <Paper
+                elevation={4}
+                sx={{
+                  p: { xs: 2, sm: 3 },
+                  width: "100%",
+                  boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  gutterBottom
+                  sx={{ fontSize: { xs: "1rem", sm: "1.2rem" } }}
+                >
+                  Product Distribution by Capacity
+                </Typography>
+                <Box
+                  sx={{ width: "100%", height: { xs: 250, sm: 300, md: 350 } }}
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={capacityChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine
+                        label={({ name, percent }) =>
+                          `${name} (${(percent * 100).toFixed(0)}%)`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {capacityChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </Box>
+              </Paper>
+            )}
           </Grid>
         </Grid>
       </Container>

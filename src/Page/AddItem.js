@@ -24,9 +24,11 @@ import NavBar from "./NavBar";
 const AddItem = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [user, setUser] = useState({ email: null });
+  const [AddItem, setAddItem] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -97,17 +99,6 @@ const AddItem = () => {
     }
   };
 
-  const handleLogout = () => {
-    signOut(auth)
-      .then(() => {
-        console.log("Signed out successfully");
-        navigate("/login");
-      })
-      .catch((error) => {
-        console.error("Sign out error", error);
-      });
-  };
-
   const validateForm = () => {
     const newErrors = {};
 
@@ -150,7 +141,10 @@ const AddItem = () => {
         year: Number(formData.year),
       };
       handleCreateNewListing(formattedData);
-      navigate("/home");
+      setAddItem(true);
+      setTimeout(() => {
+        navigate("/home");
+      }, 5000);
     }
   };
 
@@ -329,6 +323,19 @@ const AddItem = () => {
               </Grid>
             </Grid>
           </Box>
+          {AddItem && (
+            <Box sx={{ mb: 4, mt: 5 }}>
+              <Typography
+                variant="p"
+                component="p"
+                gutterBottom
+                sx={{ fontWeight: 400, color: "red" }}
+              >
+                Your product has been added successfully. It may take a few
+                moments to appear in the product list. Redirecting to Home...
+              </Typography>
+            </Box>
+          )}
         </Paper>
       </Container>
     </Box>
