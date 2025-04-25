@@ -46,7 +46,6 @@ import {
 } from "recharts";
 import NavBar from "./NavBar";
 
-// Helper function to get category icon
 const getCategoryIcon = (category) => {
   switch (category) {
     case "Smartphone":
@@ -388,7 +387,12 @@ function Home() {
                   </Typography>
                 </Paper>
               ) : (
-                <Grid container spacing={3} alignItems="stretch">
+                <Grid
+                  sx={{ justifyContent: "center" }}
+                  container
+                  spacing={3}
+                  alignItems="stretch"
+                >
                   {filteredProducts.map((product) => (
                     <Grid
                       item
